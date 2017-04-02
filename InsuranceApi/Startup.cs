@@ -32,6 +32,12 @@ namespace InsuranceApi
         {
             // Add framework services.
             services.AddMvc();
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
         }
 
         // The secret key every token will be signed with.
@@ -42,6 +48,8 @@ namespace InsuranceApi
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseCors("MyPolicy");
 
             app.UseStaticFiles();
 
@@ -85,8 +93,6 @@ namespace InsuranceApi
             };
 
             app.UseMiddleware<TokenProviderMiddleware>(Options.Create(options));
-
-            
 
             app.UseMvc();
 
